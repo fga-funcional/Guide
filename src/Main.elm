@@ -122,7 +122,7 @@ viewDrawer m =
                     else
                         "500"
             in
-            span [ style "font-weight" weight ] [ text page.title ]
+            a [ style "font-weight" weight, onClick (ChangeTo i)] [ text page.title ]
     in
     div [] [ htmlList (ul []) (li []) titles ]
 
