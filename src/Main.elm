@@ -18,6 +18,10 @@ main =
         }
 
 
+css : Html msg
+css =
+    Html.node "link" [ rel "stylesheet", href "./Ui/style.css" ] []
+
 
 --------------------------------------------------------------------------------
 -- MODEL
@@ -104,6 +108,7 @@ view m =
     div []
         [ viewDrawer m
         , viewPage m
+        , css
         ]
 
 
@@ -124,7 +129,7 @@ viewDrawer m =
             in
             a [ style "font-weight" weight, onClick (ChangeTo i)] [ text page.title ]
     in
-    div [] [ htmlList (ul []) (li []) titles ]
+    div [ class "drawer" ] [ htmlList (ul []) (li []) titles ]
 
 
 viewPage : Model -> Html Msg
