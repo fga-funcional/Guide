@@ -1,11 +1,11 @@
 html, body {
     height: 100%;
+    margin: 0;
 }
 
 .main {
     display: flex;
     flex: 1;
-    padding: 10px;
     height: 100%;
 }
 
@@ -24,4 +24,5 @@ html, body {
 .page {
     flex: 3;
     padding: 20px;
+    overflow-y: scroll;
 }
