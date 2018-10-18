@@ -105,7 +105,7 @@ update msg m =
 
 view : Model -> Html Msg
 view m =
-    div []
+    div [ class "main" ]
         [ viewDrawer m
         , viewPage m
         , css
@@ -129,7 +129,7 @@ viewDrawer m =
             in
             a [ style "font-weight" weight, onClick (ChangeTo i)] [ text page.title ]
     in
-    div [ class "drawer" ] [ htmlList (ul []) (li []) titles ]
+    div [ class "drawer" ] [ htmlList (ol []) (li []) titles ]
 
 
 viewPage : Model -> Html Msg
@@ -138,7 +138,7 @@ viewPage m =
         page =
             getAt m.index m.pages |> withDefault emptyPage
     in
-    div []
+    div [ class "page" ]
         [ button [ onClick Prev ] [ text "back" ]
         , div []
             [ h1 [] [ text page.title ]
