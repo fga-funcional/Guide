@@ -139,12 +139,14 @@ viewPage m =
             getAt m.index m.pages |> withDefault emptyPage
     in
     div [ class "page" ]
-        [ button [ onClick Prev ] [ text "back" ]
-        , div []
+        [ div []
             [ h1 [] [ text page.title ]
             , p [] [ text page.content ]
+            , div [ class "buttonsWrapper" ] 
+            [ button [ onClick Prev ] [ text "back" ]
+            , button [ onClick Next ] [ text "next" ]
             ]
-        , button [ onClick Next ] [ text "next" ]
+            ]
         ]
 
 

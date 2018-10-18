@@ -1,6 +1,7 @@
 html, body {
     height: 100%;
     margin: 0;
+    font-family: monospace;
 }
 
 .main {
@@ -10,7 +11,7 @@ html, body {
 }
 
 .drawer {
-    background-color: #ccc;
+    background-color: #eee;
     flex: 1;
     border-right: solid 1px #222;
 }
@@ -25,4 +26,23 @@ html, body {
     flex: 3;
     padding: 20px;
     overflow-y: scroll;
+}
+
+.page h1 {
+    text-transform: uppercase;
+}
+
+.page p {
+    padding: 0 30px;
+    line-height: 1.4em;
+}
+
+.buttonsWrapper {
+    position: fixed;
+    top: 95%;
+    display: flex;
+    width: 100px;
+    justify-content: space-between;
+    background-color: rgb(30, 30, 30, 0.1);
+    border-radius: 5px;
 }
