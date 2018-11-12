@@ -1,4 +1,4 @@
-module Guide exposing (Model, Msg, init, main, update, view)
+module Guide exposing (..)
 
 import Browser
 import Dict exposing (Dict)
@@ -8,15 +8,17 @@ import Html.Events exposing (..)
 import List.Extra exposing (getAt)
 import Maybe exposing (withDefault)
 import Utils exposing (..)
+import Http exposing (..)
+import Json.Decode as D
+import Json.Encode as E
 
 
 main =
     Browser.sandbox
-        { init = example
+        { init = guide
         , view = view
         , update = update
         }
-
 
 css : Html msg
 css =
@@ -31,26 +33,26 @@ css =
 type alias Model =
     { pages : List Page
     , index : Int
-    , title : String
     }
 
 
 type alias Page =
-    { title : String
+    { id : Int
+    , title : String
     , content : String
     }
 
 
 init : Model
 init =
-    { pages = [], index = 0, title = "Tutorial" }
+    { pages = [], index = 0 }
 
 
-{-| Create simple flag element
+{-| Create simple guide element
 -}
-mkPage : String -> String -> Page
-mkPage title data =
-    Page title data
+mkPage : Int -> String -> String -> Page
+mkPage id title data =
+    Page id title data
 
 
 {-| Empty mkPage used as a fallback
@@ -71,6 +73,8 @@ type Msg
     | Next
     | Prev
     | ChangeTo Int
+    | GetAPI 
+    | GotAPI (Result Http.Error (List Page))
 
 
 update : Msg -> Model -> Model
@@ -149,20 +153,33 @@ viewPage m =
             ]
         ]
 
+-- ----------------------------
+-- -- Decoders
+-- ----------------------------
+
+guideDecoder : D.Decoder (List Page)
+guideDecoder =
+    D.list (D.map3 mkPage
+        (D.at ["id"] D.int)
+        (D.at ["title"] D.string)
+        (D.at ["content"] D.string)
+    )
 
 
---------------------------------------------------------------------------------
--- EXAMPLES
---------------------------------------------------------------------------------
+getGuides : Http.Request (List Page)
+getGuides =
+  Http.get "http://localhost:3000/guides" (guideDecoder)
 
+----------------------------
+-- Example
+----------------------------
 
-example : Model
-example =
+guide : Model
+guide =
     { init
         | pages =
-            [ mkPage "Introduction" "Elm is cool..."
-            , mkPage "Preparing your environment" "You'll need to install..."
-            , mkPage "Conclusion" "It was great, heh?"
+            [ mkPage 1 "Introduction" "Elm is cool..."
+            , mkPage 2 "Preparing your environment" "You'll need to install..."
+            , mkPage 3 "Conclusion" "It was great, heh?"
             ]
-        , title = "Introduction to ELM"
     }

@@ -19,13 +19,14 @@ instance FromJSON Guide
 data Guide = Guide 
   { id :: Int
   , title :: String
+  , content :: String
   } deriving (Show, Generic)
 
 
 guides =
-  [ Guide 1 "Introduction"
-    , Guide 2 "Preparing your environment"
-    , Guide 3 "Conclusion"
+  [ Guide 1 "Introduction" "Elm is cool..."
+    , Guide 2 "Preparing your environment" "You'll need to install..."
+    , Guide 3 "Conclusion" "It was great, heh?"
   ]
 
 urls = fromList
