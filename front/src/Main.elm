@@ -14,10 +14,11 @@ import Json.Encode as E
 
 
 main =
-    Browser.sandbox
-        { init = guide
-        , view = view
+    Browser.element
+        { init = init
         , update = update
+        , view = view
+        , subscriptions = subscriptions
         }
 
 css : Html msg
@@ -43,9 +44,9 @@ type alias Page =
     }
 
 
-init : Model
-init =
-    { pages = [], index = 0 }
+init : () -> ( Model, Cmd Msg )
+init _ =
+    ( Model [] 0,  Http.send GotAPI getGuides)
 
 
 {-| Create simple guide element
@@ -59,7 +60,7 @@ mkPage id title data =
 -}
 emptyPage : Page
 emptyPage =
-    mkPage "Empty" "This mkPage is empty."
+    mkPage 0 "Empty" "This mkPage is empty."
 
 
 
@@ -77,30 +78,51 @@ type Msg
     | GotAPI (Result Http.Error (List Page))
 
 
-update : Msg -> Model -> Model
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg m =
     case msg of
+        NoOp ->
+            (m, Cmd.none)
+        GetAPI ->
+            ( m, Http.send GotAPI getGuides )
+        GotAPI result ->
+            case result of
+                Err httpError ->
+                    let
+                        _ =
+                            Debug.log "Request error" httpError
+                    in
+                        ( m, Cmd.none )
+
+                Ok pages ->
+                    ( { m | pages = pages }, Cmd.none )
         Next ->
             if m.index < List.length m.pages - 1 then
-                { m | index = m.index + 1 }
+                ({ m | index = m.index + 1 }, Cmd.none )
 
             else
-                m
+                (m, Cmd.none)
 
         Prev ->
             if m.index > 0 then
-                { m | index = m.index - 1 }
+                ({ m | index = m.index - 1 }, Cmd.none )
 
             else
-                m
+                (m, Cmd.none)
 
         ChangeTo i ->
-            { m | index = i }
-
-        _ ->
-            m
+            ({ m | index = i }, Cmd.none)
 
 
+  
+--------------------------------------------------------------------------------
+-- SUBSCRIPTIONS
+--------------------------------------------------------------------------------
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+  Sub.none
 
 --------------------------------------------------------------------------------
 -- VIEW FUNCTIONS
@@ -153,9 +175,14 @@ viewPage m =
             ]
         ]
 
--- ----------------------------
--- -- Decoders
--- ----------------------------
+----------------------------
+-- HTTP
+----------------------------
+
+getGuides : Http.Request (List Page)
+getGuides =
+  Http.get "http://localhost:3000/guides" (guideDecoder)
+
 
 guideDecoder : D.Decoder (List Page)
 guideDecoder =
@@ -164,22 +191,3 @@ guideDecoder =
         (D.at ["title"] D.string)
         (D.at ["content"] D.string)
     )
-
-
-getGuides : Http.Request (List Page)
-getGuides =
-  Http.get "http://localhost:3000/guides" (guideDecoder)
-
-----------------------------
--- Example
-----------------------------
-
-guide : Model
-guide =
-    { init
-        | pages =
-            [ mkPage 1 "Introduction" "Elm is cool..."
-            , mkPage 2 "Preparing your environment" "You'll need to install..."
-            , mkPage 3 "Conclusion" "It was great, heh?"
-            ]
-    }
