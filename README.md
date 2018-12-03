@@ -15,4 +15,3 @@ Use a lib in Elm **or** an JS web component (second alternative).
 Nome | Matrícula | GitHub
 -- | -- | --
 Júlio César Xavier Portela de Souza | 14/0024140 | [julioxavierr](https://github.com/julioxavierr)
-Guilherme Marques Rosa | 16/0007739 | [guilhesme23](https://github.com/guilhesme23)
