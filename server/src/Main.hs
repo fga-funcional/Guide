@@ -30,9 +30,7 @@ guides =
   ]
 
 urls = fromList
-  [ ("Say hello", String "/hello")
-  , ("List of guides", String "/guides")
-  ]
+  [ ("List of guides", String "/guides") ]
 
 main = do
   putStrLn "Starting Server..."
@@ -40,10 +38,6 @@ main = do
     middleware simpleCors
     get "/" $ do
       json $ Object urls
-
-
-    get "/hello" $ do
-      text "hello world!"
 
     get "/guides" $ do
       json guides
