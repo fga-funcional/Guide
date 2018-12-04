@@ -167,7 +167,7 @@ viewPage m =
     div [ class "page" ]
         [ div []
             [ h1 [] [ text page.title ]
-            , Markdown.toHtml [] page.content
+            , Markdown.toHtml [ class "markdown-body" ] page.content
             , div [ class "buttonsWrapper" ] 
             [ button [ onClick Prev ] [ text "back" ]
             , button [ onClick Next ] [ text "next" ]
