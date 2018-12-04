@@ -25,7 +25,7 @@ data Guide = Guide
 
 guides =
   [ Guide 1 "Introduction" "Elm is cool..."
-    , Guide 2 "Preparing your environment" "You'll need to install..."
+    , Guide 2 "Preparing your environment" "# You'll need to install...\n## Something \n### And something \nAnd something more..."
     , Guide 3 "Conclusion" "It was great, heh?"
   ]
 

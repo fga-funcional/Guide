@@ -9,9 +9,9 @@ import List.Extra exposing (getAt)
 import Maybe exposing (withDefault)
 import Utils exposing (..)
 import Http exposing (..)
+import Markdown exposing (..)
 import Json.Decode as D
 import Json.Encode as E
-
 
 main =
     Browser.element
@@ -167,7 +167,7 @@ viewPage m =
     div [ class "page" ]
         [ div []
             [ h1 [] [ text page.title ]
-            , p [] [ text page.content ]
+            , Markdown.toHtml [] page.content
             , div [ class "buttonsWrapper" ] 
             [ button [ onClick Prev ] [ text "back" ]
             , button [ onClick Next ] [ text "next" ]
