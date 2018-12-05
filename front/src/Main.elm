@@ -1,6 +1,7 @@
 module Guide exposing (..)
 
-import Browser
+import Browser exposing (UrlRequest, Document)
+import Browser.Navigation as Nav
 import Dict exposing (Dict)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -10,15 +11,19 @@ import Maybe exposing (withDefault)
 import Utils exposing (..)
 import Http exposing (..)
 import Markdown exposing (..)
+import Url exposing (..)
 import Json.Decode as D
 import Json.Encode as E
 
+main : Program () Model Msg
 main =
-    Browser.element
+    Browser.application
         { init = init
         , update = update
         , view = view
         , subscriptions = subscriptions
+        , onUrlRequest = LinkClicked
+        , onUrlChange = UrlChanged
         }
 
 css : Html msg
@@ -30,10 +35,11 @@ css =
 -- MODEL
 --------------------------------------------------------------------------------
 
-
 type alias Model =
     { pages : List Page
     , index : Int
+    , key : Nav.Key
+    , url : Url
     }
 
 
@@ -44,9 +50,9 @@ type alias Page =
     }
 
 
-init : () -> ( Model, Cmd Msg )
-init _ =
-    ( Model [] 0,  Http.send GotAPI getGuides)
+init : () -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
+init flags url key =
+    ( Model [] 0 key url, Http.send GotAPI getGuides )
 
 
 {-| Create simple guide element
@@ -76,6 +82,8 @@ type Msg
     | ChangeTo Int
     | GetAPI 
     | GotAPI (Result Http.Error (List Page))
+    | LinkClicked Browser.UrlRequest
+    | UrlChanged Url
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -83,6 +91,19 @@ update msg m =
     case msg of
         NoOp ->
             (m, Cmd.none)
+        LinkClicked urlRequest ->
+            case urlRequest of
+                Browser.Internal url ->
+                    Debug.log "INTERNAL"
+                    ( m, Nav.pushUrl m.key (Url.toString url) )
+
+                Browser.External href ->
+                    Debug.log "EXTERNAL"
+                    ( m, Nav.load href )
+        UrlChanged url ->
+            ( { m | url = url }
+            , Cmd.none
+            )
         GetAPI ->
             ( m, Http.send GotAPI getGuides )
         GotAPI result ->
@@ -114,14 +135,13 @@ update msg m =
             ({ m | index = i }, Cmd.none)
 
 
-  
 --------------------------------------------------------------------------------
 -- SUBSCRIPTIONS
 --------------------------------------------------------------------------------
 
 
 subscriptions : Model -> Sub Msg
-subscriptions model =
+subscriptions _ =
   Sub.none
 
 --------------------------------------------------------------------------------
@@ -129,13 +149,13 @@ subscriptions model =
 --------------------------------------------------------------------------------
 
 
-view : Model -> Html Msg
+view : Model -> Document Msg
 view m =
-    div [ class "main" ]
+    { title = "Home", body = [div [ class "main" ]
         [ viewDrawer m
         , viewPage m
         , css
-        ]
+        ]]}
 
 
 viewDrawer : Model -> Html Msg
@@ -153,7 +173,7 @@ viewDrawer m =
                     else
                         "500"
             in
-            a [ style "font-weight" weight, onClick (ChangeTo i)] [ text page.title ]
+            a [ style "font-weight" weight, href page.title ] [ text page.title ]
     in
     div [ class "drawer" ] [ htmlList (ol []) (li []) titles ]
 
