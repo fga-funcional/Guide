@@ -104,7 +104,7 @@ view : Model -> Document Msg
 view m =
     { title = "Evaluation", body = [div [ class "page" ]
         [ h3 [] [ text "O que achou do tutorial? Comente aqui!"]
-        , viewTextArea "Dê um feedback sobre o tutorial. É possível utilizar Markdown! :)" m.current UpdateText
+        , viewTextArea "Dê um feedback sobre o tutorial." m.current UpdateText
         , sendButton m
         , viewEvaluations m
         , css
@@ -125,4 +125,4 @@ viewEvaluations m =
       viewEvaluation i eval =
         p [] [ text eval ]
     in
-      div [ class "evaluation" ] [ htmlList (ol []) (li []) evaluations ]
+      div [ class "evaluations-list" ] [ htmlList (ul []) (div [ class "evaluation" ]) evaluations ]
