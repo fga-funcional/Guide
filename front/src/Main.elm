@@ -150,7 +150,7 @@ subscriptions _ =
 
 view : Model -> Document Msg
 view m =
-    { title = "Home", body = [div [ class "main" ]
+    { title = "Main", body = [div [ class "main" ]
         [ viewDrawer m
         , viewPage m
         , css
