@@ -83,7 +83,7 @@ update msg m =
           ( { m | current = v }, Cmd.none)
 
         Evaluate v ->
-            ({ m | evaluations = append [v] m.evaluations }, Cmd.none)
+            ({ m | evaluations = append [v] m.evaluations, current = "" }, Cmd.none)
 
 
 --------------------------------------------------------------------------------
@@ -104,7 +104,7 @@ view : Model -> Document Msg
 view m =
     { title = "Evaluation", body = [div [ class "page" ]
         [ h3 [] [ text "O que achou do tutorial? Comente aqui!"]
-        , viewTextArea "Dê um feedback sobre o tutorial." m.current UpdateText
+        , viewTextArea "Dê um feedback sobre o tutorial. É possível comentar em Markdown :)" m.current UpdateText
         , sendButton m
         , viewEvaluations m
         , css
