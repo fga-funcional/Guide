@@ -123,6 +123,6 @@ viewEvaluations m =
       evaluations =
         List.indexedMap viewEvaluation m.evaluations
       viewEvaluation i eval =
-        p [] [ text eval ]
+        Markdown.toHtml [ class "markdown-body" ] eval
     in
       div [ class "evaluations-list" ] [ htmlList (ul []) (div [ class "evaluation" ]) evaluations ]
