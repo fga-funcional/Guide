@@ -47,6 +47,11 @@ html, body {
     border-radius: 5px;
 }
 
+.title {
+    text-decoration: none;
+    color: inherit;
+}
+
 /* Github Markdown CSS */
 
 @font-face {

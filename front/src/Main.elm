@@ -14,6 +14,7 @@ import Markdown exposing (..)
 import Url exposing (..)
 import Json.Decode as D
 import Json.Encode as E
+import String exposing (fromInt)
 
 main : Program () Model Msg
 main =
@@ -94,11 +95,9 @@ update msg m =
         LinkClicked urlRequest ->
             case urlRequest of
                 Browser.Internal url ->
-                    Debug.log "INTERNAL"
                     ( m, Nav.pushUrl m.key (Url.toString url) )
 
                 Browser.External href ->
-                    Debug.log "EXTERNAL"
                     ( m, Nav.load href )
         UrlChanged url ->
             ( { m | url = url }
@@ -132,7 +131,7 @@ update msg m =
                 (m, Cmd.none)
 
         ChangeTo i ->
-            ({ m | index = i }, Cmd.none)
+            ({ m | index = i - 1 }, Cmd.none)
 
 
 --------------------------------------------------------------------------------
@@ -173,7 +172,7 @@ viewDrawer m =
                     else
                         "500"
             in
-            a [ style "font-weight" weight, href page.title ] [ text page.title ]
+            a [ style "font-weight" weight, class "title", href (fromInt page.id), onClick(ChangeTo(page.id)) ] [ text page.title ]
     in
     div [ class "drawer" ] [ htmlList (ol []) (li []) titles ]
 
