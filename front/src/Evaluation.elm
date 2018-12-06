@@ -37,6 +37,10 @@ css =
 -- MODEL
 --------------------------------------------------------------------------------
 
+mkEvaluation : String -> String
+mkEvaluation value =
+    value
+
 type alias Model =
     { evaluations : List String
     , current : String
@@ -47,7 +51,7 @@ type alias Model =
 
 init : () -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
 init flags url key =
-    ( Model [] "" key url, Cmd.none )
+    ( Model [] "" key url, Http.send GotAPI getEvaluations )
 
 --------------------------------------------------------------------------------
 -- MESSAGES
@@ -58,6 +62,8 @@ type Msg
     = NoOp
     | LinkClicked Browser.UrlRequest
     | UrlChanged Url
+    | GetAPI 
+    | GotAPI (Result Http.Error (List String))
     | Evaluate String
     | UpdateText String
 
@@ -67,6 +73,7 @@ update msg m =
     case msg of
         NoOp ->
             (m, Cmd.none)
+
         LinkClicked urlRequest ->
             case urlRequest of
                 Browser.Internal url ->
@@ -74,10 +81,26 @@ update msg m =
 
                 Browser.External href ->
                     ( m, Nav.load href )
+
         UrlChanged url ->
             ( { m | url = url }
             , Cmd.none
             )
+
+        GetAPI ->
+          ( m, Http.send GotAPI getEvaluations )
+
+        GotAPI result ->
+            case result of
+                Err httpError ->
+                    let
+                        _ =
+                            Debug.log "Request error" httpError
+                    in
+                        ( m, Cmd.none )
+
+                Ok evaluations ->
+                    ( { m | evaluations = evaluations }, Cmd.none )
 
         UpdateText v -> 
           ( { m | current = v }, Cmd.none)
@@ -126,3 +149,18 @@ viewEvaluations m =
         Markdown.toHtml [ class "markdown-body" ] eval
     in
       div [ class "evaluations-list" ] [ htmlList (ul []) (div [ class "evaluation" ]) evaluations ]
+
+----------------------------
+-- HTTP
+----------------------------
+
+getEvaluations : Http.Request (List String)
+getEvaluations =
+  Http.get "http://localhost:3000/evaluations" (evaluationDecoder)
+
+
+{-| Create simple guide element
+-}
+evaluationDecoder : D.Decoder (List String)
+evaluationDecoder =
+    D.list (D.map mkEvaluation (D.string))

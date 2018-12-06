@@ -29,6 +29,12 @@ guides =
     , Guide 3 "Conclusion" "It was great, heh?"
   ]
 
+evaluations =
+  [
+    String "Nice",
+    String "Great!"
+  ]
+
 urls = fromList
   [ ("List of guides", String "/guides") ]
 
@@ -41,3 +47,6 @@ main = do
 
     get "/guides" $ do
       json guides
+
+    get "/evaluations" $ do
+      json evaluations
